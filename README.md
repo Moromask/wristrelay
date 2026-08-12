@@ -102,3 +102,20 @@ SwiftProtobuf через SPM.
 - APK устанавливается, MainActivity запускается без крашей.
 - BridgeService стартует как foreground-service, создаёт канал уведомлений.
 - Bluetooth-адаптер эмулятора включён (BLE-реклама стартует при запуске сервиса).
+
+## CI-сборка watchOS (бесплатно, без Mac)
+
+Проект уже содержит `.github/workflows/watchos-build.yml`. Чтобы запустить:
+
+1. Создайте репозиторий на GitHub (например `watchbridge`).
+2. Запушьте проект:
+   ```bash
+   git remote add origin https://github.com/ВАШ_ЛОГИН/watchbridge.git
+   git push -u origin master
+   ```
+3. Откройте репозиторий → вкладка **Actions** → workflow **watchos-build** →
+   **Run workflow**.
+4. Через ~3–5 минут в артефактах появится `WatchBridgeWatchOS-simulator.app`.
+
+Если Swift-код не компилируется — workflow упадёт с ошибками, и мы их исправим
+(до покупки Apple Developer и до Mac).
