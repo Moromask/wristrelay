@@ -15,10 +15,8 @@ targets:
     sources:
       - WristRelayWatchOS
     dependencies:
-      - framework: CoreImage.framework
-        embed: false
-      - framework: CoreGraphics.framework
-        embed: false
+      - sdk: CoreImage.framework
+      - sdk: CoreGraphics.framework
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.wristrelay.watch
