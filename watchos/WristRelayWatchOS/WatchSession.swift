@@ -2,6 +2,7 @@ import Foundation
 import Combine
 import Security
 import HealthKit
+import SwiftProtobuf
 
 /// High-level session: connects the watch to the phone, sends/receives messages,
 /// handles pairing state, notification actions and health samples.
