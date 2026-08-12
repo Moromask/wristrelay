@@ -98,8 +98,7 @@ struct PairingView: View {
                     .font(.headline)
                 TextField("PIN с телефона", text: $pin)
                     .textContentType(.oneTimeCode)
-                    .keyboardType(.numberPad)
-                    .font(.title2)
+                    .font(.title)
                     .multilineTextAlignment(.center)
                 Button("Подтвердить") {
                     session.sendPairing(pin: pin)
