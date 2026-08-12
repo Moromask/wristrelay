@@ -44,5 +44,5 @@ jobs:
         with:
           name: WristRelayWatchOS-simulator
           path: |
-            watchos/build/Build/Products/Debug-iphonesimulator/WristRelayWatchOS.app
+            watchos/build/Build/Products/Debug-watchsimulator/WristRelayWatchOS.app
           if-no-files-found: error
