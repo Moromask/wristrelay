@@ -19,10 +19,13 @@ final class CentralManager: NSObject, ObservableObject, CBCentralManagerDelegate
     private var manager: CBCentralManager!
     private var characteristicWrites: [CBUUID: CBCharacteristic] = [:]
     private let onMessage: (Data) -> Void
+    private let onReady: (() -> Void)?
     private var discoveredServices = false
+    private var discoveredCharacteristics = 0
 
-    init(onMessage: @escaping (Data) -> Void) {
+    init(onMessage: @escaping (Data) -> Void, onReady: (() -> Void)? = nil) {
         self.onMessage = onMessage
+        self.onReady = onReady
         super.init()
         manager = CBCentralManager(delegate: self, queue: nil)
     }
@@ -122,6 +125,11 @@ final class CentralManager: NSObject, ObservableObject, CBCentralManagerDelegate
             if characteristic.properties.contains(.notify) || characteristic.properties.contains(.indicate) {
                 peripheral.setNotifyValue(true, for: characteristic)
             }
+        }
+        discoveredCharacteristics += 1
+        if discoveredCharacteristics >= 2 {
+            // Оба сервиса готовы — можно слать WATCH_HELLO.
+            onReady?()
         }
     }
 

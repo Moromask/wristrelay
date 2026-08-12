@@ -34,9 +34,15 @@ final class WatchSession: ObservableObject {
     }
 
     func start() {
-        let central = CentralManager(onMessage: { [weak self] data in
-            self?.handleRawMessage(data)
-        })
+        let central = CentralManager(
+            onMessage: { [weak self] data in
+                self?.handleRawMessage(data)
+            },
+            onReady: { [weak self] in
+                // Подключены и готовы: отправляем WATCH_HELLO с nonce из QR.
+                self?.sendHello()
+            }
+        )
         self.central = central
         connectionState = .scanning
         central.startScanning()
@@ -121,10 +127,55 @@ final class WatchSession: ObservableObject {
     }
 
     /// Watch -> Phone: WATCH_HELLO c nonce из QR.
+    /// Ручная protobuf-сериализация (см. proto/bridge.proto):
+    ///   Envelope{sequence=1, type=PAIRING(5), payload=PairingMessage}
+    ///   PairingMessage{step=WATCH_HELLO(1), nonce}
     private func sendHello() {
-        // TODO: сгенерировать protobuf Envelope(PairingMessage{step: WATCH_HELLO, nonce}).
-        // Пока only log; интеграция protobuf — следующий шаг.
-        NSLog("WATCH_HELLO nonce=\(nonceHex(nonceBytes ?? Data()))")
+        guard let central = central, let nonce = nonceBytes else {
+            NSLog("WATCH_HELLO пропущен: нет соединения или nonce")
+            return
+        }
+        let payload = encodePairingMessage(step: 1, nonce: nonce)
+        let envelope = encodeEnvelope(sequence: sequence, type: 5, payload: payload)
+        sequence += 1
+        // WATCH_HELLO шлём в характеристику Pairing (служба Main).
+        central.write(envelope, to: BridgeUuids.charPairing)
+        NSLog("WATCH_HELLO отправлен nonce=\(nonceHex(nonce))")
+    }
+
+    /// Envelope{1: sequence (varint), 2: type (varint), 3: payload (bytes)}
+    private func encodeEnvelope(sequence: UInt64, type: Int, payload: Data) -> Data {
+        var out = Data()
+        out.append(0x08)                       // field 1, wire 0 (varint)
+        out.append(varint(sequence))
+        out.append(0x10)                       // field 2, wire 0 (varint)
+        out.append(varint(UInt64(type)))
+        out.append(0x1A)                       // field 3, wire 2 (length-delimited)
+        out.append(varint(UInt64(payload.count)))
+        out.append(payload)
+        return out
+    }
+
+    /// PairingMessage{1: step (varint), 2: nonce (bytes)}
+    private func encodePairingMessage(step: Int, nonce: Data) -> Data {
+        var out = Data()
+        out.append(0x08)                       // field 1, wire 0
+        out.append(varint(UInt64(step)))
+        out.append(0x12)                       // field 2, wire 2 (length-delimited)
+        out.append(varint(UInt64(nonce.count)))
+        out.append(nonce)
+        return out
+    }
+
+    private func varint(_ value: UInt64) -> Data {
+        var v = value
+        var out = Data()
+        while v >= 0x80 {
+            out.append(UInt8(v & 0x7F) | 0x80)
+            v >>= 7
+        }
+        out.append(UInt8(v))
+        return out
     }
 
     private func nonceHex(_ data: Data) -> String {
