@@ -158,7 +158,7 @@ final class WatchSession: ObservableObject {
         guard let central, isPhoneConnected else { return }
         var action = WBNotificationAction()
         action.notificationKey = notificationKey
-        action.actionId = actionId
+        action.actionID = actionId
         action.replyText = replyText ?? ""
         send(.notificationAction, payload: action)
     }
