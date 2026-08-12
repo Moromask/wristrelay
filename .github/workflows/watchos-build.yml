@@ -33,6 +33,13 @@ jobs:
       - name: Generate Swift protobuf classes
         run: bash Scripts/generate_proto.sh
 
+      - name: Upload generated protobuf (для отладки имён)
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-protobuf
+          path: watchos/WristRelayWatchOS/Generated
+          if-no-files-found: error
+
       - name: Generate Xcode project
         run: xcodegen generate
 
