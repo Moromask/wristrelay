@@ -18,7 +18,7 @@ final class WatchSession: ObservableObject {
 
     @Published private(set) var connectionState: ConnectionState = .idle
     @Published private(set) var paired = false
-    @Published private(set) var notifications: [WBNotification] = []
+    @Published private(set) var notifications: [WatchNotification] = []
     @Published private(set) var pairingNonce: String?   // hex nonce для QR
 
     private var central: CentralManager?
@@ -103,19 +103,19 @@ final class WatchSession: ObservableObject {
         guard let message = Fragmentation.accept(fragment: data, pending: &pendingFragments) else {
             return
         }
-        guard let envelope = try? WB_Envelope(serializedData: message) else { return }
+        guard let envelope = try? WBEnvelope(serializedData: message) else { return }
 
         switch envelope.type {
         case .notification:
-            if let n = try? WB_Notification(serializedData: envelope.payload) {
+            if let n = try? WBNotification(serializedData: envelope.payload) {
                 addNotification(n)
             }
         case .notificationRemoved:
-            if let r = try? WB_NotificationRemoved(serializedData: envelope.payload) {
+            if let r = try? WBNotificationRemoved(serializedData: envelope.payload) {
                 notifications.removeAll { $0.key == r.key }
             }
         case .pairing:
-            handlePairing(try? WB_PairingMessage(serializedData: envelope.payload))
+            handlePairing(try? WBPairingMessage(serializedData: envelope.payload))
         case .pong:
             break
         default:
@@ -123,8 +123,8 @@ final class WatchSession: ObservableObject {
         }
     }
 
-    private func addNotification(_ n: WB_Notification) {
-        let item = WBNotification(
+    private func addNotification(_ n: WBNotification) {
+        let item = WatchNotification(
             key: n.key,
             title: n.title,
             text: n.text,
@@ -136,7 +136,7 @@ final class WatchSession: ObservableObject {
         if notifications.count > 50 { notifications.removeLast() }
     }
 
-    private func handlePairing(_ msg: WB_PairingMessage?) {
+    private func handlePairing(_ msg: WBPairingMessage?) {
         guard let msg else { return }
         switch msg.step {
         case .watchVerified, .phoneVerified:
@@ -155,7 +155,7 @@ final class WatchSession: ObservableObject {
     /// Ответ на уведомление (reply) или запуск действия — Watch → Phone.
     func sendNotificationAction(notificationKey: String, actionId: String, replyText: String?) {
         guard let central, isPhoneConnected else { return }
-        var action = WB_NotificationAction()
+        var action = WBNotificationAction()
         action.notificationKey = notificationKey
         action.actionId = actionId
         action.replyText = replyText ?? ""
@@ -163,9 +163,9 @@ final class WatchSession: ObservableObject {
     }
 
     /// Отправка health-сэмпла — Watch → Phone.
-    func sendHealthSample(metric: WB_HealthMetric, value: Double, time: Date) {
+    func sendHealthSample(metric: WBHealthMetric, value: Double, time: Date) {
         guard let central, isPhoneConnected, paired else { return }
-        var sample = WB_HealthSample()
+        var sample = WBHealthSample()
         sample.metric = metric
         sample.value = value
         sample.timeMs = Int64(time.timeIntervalSince1970 * 1000)
@@ -183,7 +183,7 @@ final class WatchSession: ObservableObject {
             NSLog("WATCH_HELLO пропущен: нет соединения или nonce")
             return
         }
-        var msg = WB_PairingMessage()
+        var msg = WBPairingMessage()
         msg.step = .watchHello
         msg.nonce = nonce
         send(.pairing, payload: msg)
@@ -195,14 +195,14 @@ final class WatchSession: ObservableObject {
     }
 
     /// Сериализация Envelope + отправка в характеристику Pairing.
-    private func send<T: SwiftProtobuf.Message>(_ type: WB_MessageType, payload: T) {
+    private func send<T: SwiftProtobuf.Message>(_ type: WBMessageType, payload: T) {
         guard let data = try? payload.serializedData() else { return }
         send(type, payload: data)
     }
 
-    private func send(_ type: WB_MessageType, payload: Data) {
+    private func send(_ type: WBMessageType, payload: Data) {
         guard let central, isPhoneConnected else { return }
-        var envelope = WB_Envelope()
+        var envelope = WBEnvelope()
         envelope.sequence = sequence
         envelope.type = type
         envelope.payload = payload
@@ -216,7 +216,7 @@ final class WatchSession: ObservableObject {
     }
 }
 
-struct WBNotification: Identifiable {
+struct WatchNotification: Identifiable {
     let key: String
     let title: String
     let text: String

@@ -14,7 +14,7 @@ final class HealthReader: NSObject, ObservableObject {
     @Published private(set) var authState: AuthState = .unknown
 
     private let store = HKHealthStore()
-    private let sendSample: (WB_HealthMetric, Double, Date) -> Void
+    private let sendSample: (WBHealthMetric, Double, Date) -> Void
     private var timer: Timer?
 
     /// Типы, которые читаем с часов.
@@ -30,7 +30,7 @@ final class HealthReader: NSObject, ObservableObject {
         return types
     }
 
-    init(sendSample: @escaping (WB_HealthMetric, Double, Date) -> Void) {
+    init(sendSample: @escaping (WBHealthMetric, Double, Date) -> Void) {
         self.sendSample = sendSample
         super.init()
     }
