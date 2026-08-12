@@ -3,7 +3,7 @@ package com.wristrelay.app.pairing
 import android.util.Log
 import com.wristrelay.app.proto.Bridge.PairingMessage
 import com.wristrelay.app.proto.Bridge.PairingStep
-import com.wristrelay.app.storage.SecureStorage
+import com.wristrelay.app.storage.KeyValueStorage
 import java.security.MessageDigest
 import java.security.SecureRandom
 
@@ -20,7 +20,7 @@ import java.security.SecureRandom
  *  3. Phone сверяет с nonce из QR -> совпало -> PHONE_VERIFIED(success, session_key)
  *  4. Watch -> WATCH_VERIFIED
  */
-class PairingManager(private val storage: SecureStorage) {
+class PairingManager(private val storage: KeyValueStorage) {
 
     interface Callback {
         fun onPinRequired(pin: String)
@@ -131,7 +131,7 @@ class PairingManager(private val storage: SecureStorage) {
 
     private fun completePairing(): PairingMessage {
         val sessionKey = ByteArray(32).also { SecureRandom().nextBytes(it) }
-        storage.put(KEY_SESSION, android.util.Base64.encodeToString(sessionKey, android.util.Base64.NO_WRAP))
+        storage.put(KEY_SESSION, java.util.Base64.getEncoder().encodeToString(sessionKey))
         callback?.onPaired(sessionKey)
         return PairingMessage.newBuilder()
             .setStep(PairingStep.PHONE_VERIFIED)

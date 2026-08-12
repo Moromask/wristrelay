@@ -15,17 +15,17 @@ import javax.crypto.spec.GCMParameterSpec
  * Secure storage backed by Android Keystore + AES/GCM/NoPadding.
  * Each encryption uses a fresh random IV (prepended to the ciphertext).
  */
-class SecureStorage(context: Context) {
+class SecureStorage(context: Context) : KeyValueStorage {
 
     private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-    fun put(key: String, value: String): Boolean {
+    override fun put(key: String, value: String): Boolean {
         val ciphertext = encrypt(value) ?: return false
         prefs.edit().putString(key, Base64.encodeToString(ciphertext, Base64.NO_WRAP)).apply()
         return true
     }
 
-    fun get(key: String): String? {
+    override fun get(key: String): String? {
         val encoded = prefs.getString(key, null) ?: return null
         return try {
             decrypt(Base64.decode(encoded, Base64.NO_WRAP))
@@ -35,11 +35,11 @@ class SecureStorage(context: Context) {
         }
     }
 
-    fun remove(key: String) {
+    override fun remove(key: String) {
         prefs.edit().remove(key).apply()
     }
 
-    fun contains(key: String): Boolean = prefs.contains(key)
+    override fun contains(key: String): Boolean = prefs.contains(key)
 
     private fun getOrCreateKey(): SecretKey {
         val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
