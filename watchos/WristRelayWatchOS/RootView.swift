@@ -1,5 +1,4 @@
 import SwiftUI
-import CoreImage
 
 struct RootView: View {
     @EnvironmentObject var session: WatchSession
@@ -127,13 +126,7 @@ struct PairingView: View {
     }
 
     private func makeQrImage(_ payload: String) -> Image? {
-        guard let filter = CIFilter(name: "CIQRCodeGenerator") else { return nil }
-        filter.setValue(Data(payload.utf8), forKey: "inputMessage")
-        filter.setValue("M", forKey: "inputCorrectionLevel")
-        guard let output = filter.outputImage else { return nil }
-        let scaled = output.transformed(by: CGAffineTransform(scaleX: 8, y: 8))
-        let context = CIContext()
-        guard let cgImage = context.createCGImage(scaled, from: scaled.extent) else { return nil }
+        guard let cgImage = QrCodeGenerator.cgImage(data: payload, size: 90) else { return nil }
         return Image(decorative: cgImage, scale: 1.0)
     }
 }

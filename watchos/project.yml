@@ -14,9 +14,6 @@ targets:
     platform: watchOS
     sources:
       - WristRelayWatchOS
-    dependencies:
-      - sdk: CoreImage.framework
-      - sdk: CoreGraphics.framework
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.wristrelay.watch
