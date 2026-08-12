@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "WatchBridgeWatchOS",
+    name: "WristRelayWatchOS",
     platforms: [
         .watchOS("9.0")
     ],
@@ -11,11 +11,11 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "WatchBridgeWatchOS",
+            name: "WristRelayWatchOS",
             dependencies: [
                 .product(name: "SwiftProtobuf", package: "swift-protobuf")
             ],
-            path: "WatchBridgeWatchOS"
+            path: "WristRelayWatchOS"
         )
     ]
 )

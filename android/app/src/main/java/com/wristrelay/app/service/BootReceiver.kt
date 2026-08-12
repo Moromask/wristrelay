@@ -1,4 +1,4 @@
-package com.watchbridge.service
+package com.wristrelay.app.service
 
 import android.content.BroadcastReceiver
 import android.content.Context

@@ -1,4 +1,4 @@
-package com.watchbridge
+package com.wristrelay.app
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.watchbridge.service.BridgeService
+import com.wristrelay.app.service.BridgeService
 
 class MainActivity : ComponentActivity() {
 
@@ -62,7 +62,7 @@ private fun BridgeHome() {
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.Start
     ) {
-        Text(text = "WatchBridge", style = MaterialTheme.typography.headlineMedium)
+        Text(text = "WristRelay", style = MaterialTheme.typography.headlineMedium)
 
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp)) {
@@ -71,7 +71,7 @@ private fun BridgeHome() {
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
-                    text = "BLE-реклама активна — часы видят телефон как устройство WatchBridge.",
+                    text = "BLE-реклама активна — часы видят телефон как устройство WristRelay.",
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(top = 8.dp)
                 )

@@ -62,7 +62,7 @@ final class CentralManager: NSObject, ObservableObject, CBCentralManagerDelegate
 
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
                         advertisementData: [String: Any], rssi RSSI: NSNumber) {
-        // Connect to the first WatchBridge peripheral.
+        // Connect to the first WristRelay peripheral.
         stopScanning()
         connectedPeripheral = peripheral
         peripheral.delegate = self

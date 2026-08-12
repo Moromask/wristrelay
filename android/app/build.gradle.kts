@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.watchbridge"
+    namespace = "com.wristrelay.app"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.watchbridge"
+        applicationId = "com.wristrelay.app"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

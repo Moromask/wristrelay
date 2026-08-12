@@ -1,4 +1,4 @@
-package com.watchbridge.notifications
+package com.wristrelay.app.notifications
 
 import android.app.Notification
 import android.app.PendingIntent

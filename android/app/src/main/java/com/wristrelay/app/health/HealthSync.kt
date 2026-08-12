@@ -1,4 +1,4 @@
-package com.watchbridge.health
+package com.wristrelay.app.health
 
 import android.content.Context
 import android.util.Log

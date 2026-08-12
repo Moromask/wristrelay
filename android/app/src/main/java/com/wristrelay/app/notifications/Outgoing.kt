@@ -1,10 +1,10 @@
-package com.watchbridge.notifications
+package com.wristrelay.app.notifications
 
 import android.util.Log
-import com.watchbridge.ble.protocol.EnvelopeCodec
-import com.watchbridge.proto.Bridge.MessageType
-import com.watchbridge.proto.Bridge.Notification
-import com.watchbridge.proto.Bridge.NotificationRemoved
+import com.wristrelay.app.ble.protocol.EnvelopeCodec
+import com.wristrelay.app.proto.Bridge.MessageType
+import com.wristrelay.app.proto.Bridge.Notification
+import com.wristrelay.app.proto.Bridge.NotificationRemoved
 
 /**
  * Мост «уведомление → часы».
@@ -16,7 +16,7 @@ import com.watchbridge.proto.Bridge.NotificationRemoved
 object Outgoing {
 
     private const val TAG = "Outgoing"
-    private const val ACTION_FORWARD = "com.watchbridge.FORWARD"
+    private const val ACTION_FORWARD = "com.wristrelay.app.FORWARD"
 
     /** Регистрируется BridgeService при старте. */
     var activeForwarder: ((ByteArray) -> Unit)? = null

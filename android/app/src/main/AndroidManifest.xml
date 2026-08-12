@@ -33,7 +33,7 @@
         android:name=".MergeApplication"
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
-        android:theme="@style/Theme.WatchBridge"
+        android:theme="@style/Theme.WristRelay"
         android:allowBackup="true"
         android:supportsRtl="false">
 

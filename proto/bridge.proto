@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package watchbridge;
+package wristrelay;
 
-option java_package = "com.watchbridge.proto";
+option java_package = "com.wristrelay.app.proto";
 option java_outer_classname = "Bridge";
 option swift_prefix = "WB";
 

@@ -1,4 +1,4 @@
-package com.watchbridge.service
+package com.wristrelay.app.service
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -13,22 +13,22 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.watchbridge.MainActivity
-import com.watchbridge.R
-import com.watchbridge.ble.BridgeUuids
-import com.watchbridge.ble.GattServer
-import com.watchbridge.ble.protocol.EnvelopeCodec
-import com.watchbridge.ble.protocol.MessageAssembler
-import com.watchbridge.health.HealthSync
-import com.watchbridge.notifications.NotificationActionRouter
-import com.watchbridge.notifications.Outgoing
-import com.watchbridge.pairing.PairingManager
-import com.watchbridge.proto.Bridge.HealthSample
-import com.watchbridge.proto.Bridge.PairingMessage
-import com.watchbridge.proto.Bridge.Envelope
-import com.watchbridge.proto.Bridge.MessageType
-import com.watchbridge.proto.Bridge.NotificationAction
-import com.watchbridge.storage.SecureStorage
+import com.wristrelay.app.MainActivity
+import com.wristrelay.app.R
+import com.wristrelay.app.ble.BridgeUuids
+import com.wristrelay.app.ble.GattServer
+import com.wristrelay.app.ble.protocol.EnvelopeCodec
+import com.wristrelay.app.ble.protocol.MessageAssembler
+import com.wristrelay.app.health.HealthSync
+import com.wristrelay.app.notifications.NotificationActionRouter
+import com.wristrelay.app.notifications.Outgoing
+import com.wristrelay.app.pairing.PairingManager
+import com.wristrelay.app.proto.Bridge.HealthSample
+import com.wristrelay.app.proto.Bridge.PairingMessage
+import com.wristrelay.app.proto.Bridge.Envelope
+import com.wristrelay.app.proto.Bridge.MessageType
+import com.wristrelay.app.proto.Bridge.NotificationAction
+import com.wristrelay.app.storage.SecureStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -228,9 +228,9 @@ class BridgeService : Service(), GattServer.Listener, MessageAssembler.Listener,
 
     companion object {
         private const val TAG = "BridgeService"
-        private const val CHANNEL_ID = "watchbridge_service"
+        private const val CHANNEL_ID = "wristrelay_service"
         private const val NOTIFICATION_ID = 9417
-        const val ACTION_STOP = "com.watchbridge.action.STOP"
+        const val ACTION_STOP = "com.wristrelay.app.action.STOP"
 
         fun start(context: Context) {
             val intent = Intent(context, BridgeService::class.java)

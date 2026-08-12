@@ -1,4 +1,4 @@
-package com.watchbridge.ble.protocol
+package com.wristrelay.app.ble.protocol
 
 import android.util.Log
 import java.util.concurrent.ConcurrentHashMap

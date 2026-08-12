@@ -1,4 +1,4 @@
-# План работ: WatchBridge — Apple Watch ↔ Android
+# План работ: WristRelay — Apple Watch ↔ Android
 
 Проект из двух приложений, общающихся напрямую по Bluetooth LE (BLE).
 
@@ -70,7 +70,7 @@ minSdk 26, targetSdk 35, language: Kotlin.
 ### 2.1. Модули/пакеты
 
 ```
-com.watchbridge
+com.wristrelay.app
 ├── MainActivity.kt            — Compose-экран (статус, устройства, настройки)
 ├── MergeApplication.kt        — Application, инициализация
 ├── ble/
@@ -143,8 +143,8 @@ Deployment: watchOS 9.0+, Xcode 15+, один target.
 ### 3.1. Модули/пакеты
 
 ```
-WatchBridgeWatchOS/
-├── WatchBridgeWatchOSApp.swift   — @main
+WristRelayWatchOS/
+├── WristRelayWatchOSApp.swift   — @main
 ├── Views/
 │   ├── StatusView.swift          — статус подключения
 │   ├── NotificationListView.swift — лента уведомлений

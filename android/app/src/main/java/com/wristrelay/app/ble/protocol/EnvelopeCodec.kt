@@ -1,7 +1,7 @@
-package com.watchbridge.ble.protocol
+package com.wristrelay.app.ble.protocol
 
-import com.watchbridge.proto.Bridge.Envelope
-import com.watchbridge.proto.Bridge.MessageType
+import com.wristrelay.app.proto.Bridge.Envelope
+import com.wristrelay.app.proto.Bridge.MessageType
 
 /**
  * Сериализация/десериализация Envelope.

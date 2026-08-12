@@ -1,10 +1,10 @@
-# WatchBridge watchOS — сборка и тест
+# WristRelay watchOS — сборка и тест
 
 ## Сборка в облаке (GitHub Actions) — бесплатно, без Mac
 
-1. Заведите GitHub-репозиторий и залейте проект (папка `watchbridge/`).
+1. Заведите GitHub-репозиторий и залейте проект (папка `wristrelay/`).
 2. Откройте репозиторий → Actions → workflow **watchos-build** → Run workflow.
-3. В артефактах появится `WatchBridgeWatchOS-simulator.app` — это сборка для
+3. В артефактах появится `WristRelayWatchOS-simulator.app` — это сборка для
    watchOS Simulator, подпись отключена (`CODE_SIGNING_ALLOWED=NO`).
 
 Это проверяет, что Swift-код компилируется, **до** покупки Apple Developer.
@@ -18,8 +18,8 @@
 ```bash
 cd watchos
 brew install xcodegen        # один раз
-xcodegen generate            # создаст WatchBridgeWatchOS.xcodeproj
-open WatchBridgeWatchOS.xcodeproj
+xcodegen generate            # создаст WristRelayWatchOS.xcodeproj
+open WristRelayWatchOS.xcodeproj
 ```
 Затем в Xcode выберите симулятор Apple Watch и Run.
 
@@ -39,5 +39,5 @@ open WatchBridgeWatchOS.xcodeproj
 ## Структура
 
 - `project.yml` — XcodeGen-спека (источник истины для проекта)
-- `WatchBridgeWatchOS/` — исходники Swift
+- `WristRelayWatchOS/` — исходники Swift
 - `.github/workflows/watchos-build.yml` — CI-сборка

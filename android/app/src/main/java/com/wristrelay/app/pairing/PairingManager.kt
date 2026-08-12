@@ -1,9 +1,9 @@
-package com.watchbridge.pairing
+package com.wristrelay.app.pairing
 
 import android.util.Log
-import com.watchbridge.proto.Bridge.PairingMessage
-import com.watchbridge.proto.Bridge.PairingStep
-import com.watchbridge.storage.SecureStorage
+import com.wristrelay.app.proto.Bridge.PairingMessage
+import com.wristrelay.app.proto.Bridge.PairingStep
+import com.wristrelay.app.storage.SecureStorage
 import java.security.MessageDigest
 import java.security.SecureRandom
 

@@ -1,4 +1,4 @@
-package com.watchbridge.storage
+package com.wristrelay.app.storage
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -8,7 +8,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-private val Context.dataStore by preferencesDataStore(name = "watchbridge_settings")
+private val Context.dataStore by preferencesDataStore(name = "wristrelay_settings")
 
 /**
  * App settings persisted via DataStore.

@@ -1,7 +1,7 @@
-package com.watchbridge.ble.protocol
+package com.wristrelay.app.ble.protocol
 
 import android.bluetooth.BluetoothDevice
-import com.watchbridge.proto.Bridge.Envelope
+import com.wristrelay.app.proto.Bridge.Envelope
 
 /**
  * Собирает фрагменты в полные сообщения и передаёт Envelope дальше.

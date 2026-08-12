@@ -1,4 +1,4 @@
-package com.watchbridge
+package com.wristrelay.app
 
 import android.annotation.SuppressLint
 import android.app.Application

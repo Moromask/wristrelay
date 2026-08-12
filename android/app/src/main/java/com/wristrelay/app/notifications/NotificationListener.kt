@@ -1,12 +1,12 @@
-package com.watchbridge.notifications
+package com.wristrelay.app.notifications
 
 import android.app.NotificationManager
 import android.content.Context
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
-import com.watchbridge.proto.Bridge.Action
-import com.watchbridge.proto.Bridge.Notification
+import com.wristrelay.app.proto.Bridge.Action
+import com.wristrelay.app.proto.Bridge.Notification
 
 /**
  * Слушает уведомления Android и отправляет их на часы через BridgeService.
@@ -88,7 +88,7 @@ class NotificationListener : NotificationListenerService() {
                 context.contentResolver,
                 "enabled_notification_listeners"
             )
-            return flat?.contains("com.watchbridge/.notifications.NotificationListener") == true
+            return flat?.contains("com.wristrelay.app/.notifications.NotificationListener") == true
         }
     }
 }

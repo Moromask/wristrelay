@@ -1,29 +1,29 @@
-# XcodeGen spec: генерирует WatchBridgeWatchOS.xcodeproj из текстового файла.
+# XcodeGen spec: генерирует WristRelayWatchOS.xcodeproj из текстового файла.
 # Установка: brew install xcodegen; затем xcodegen generate
-name: WatchBridgeWatchOS
+name: WristRelayWatchOS
 options:
-  bundleIdPrefix: com.watchbridge
+  bundleIdPrefix: com.wristrelay
   deploymentTarget:
     watchOS: "9.0"
   createIntermediateGroups: true
   groupSortPosition: top
 
 targets:
-  WatchBridgeWatchOS:
+  WristRelayWatchOS:
     type: application
     platform: watchOS
     sources:
-      - WatchBridgeWatchOS
+      - WristRelayWatchOS
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.watchbridge.watchos
-        PRODUCT_NAME: WatchBridgeWatchOS
+        PRODUCT_BUNDLE_IDENTIFIER: com.wristrelay.watch
+        PRODUCT_NAME: WristRelayWatchOS
         TARGETED_DEVICE_FAMILY: "4"
         SWIFT_VERSION: "5.9"
         GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: WatchBridge
-        INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription: "WatchBridge использует Bluetooth для связи с Android-телефоном"
-        INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription: "WatchBridge подключается к телефону по Bluetooth LE"
+        INFOPLIST_KEY_CFBundleDisplayName: WristRelay
+        INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription: "WristRelay использует Bluetooth для связи с Android-телефоном"
+        INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription: "WristRelay подключается к телефону по Bluetooth LE"
         CODE_SIGN_STYLE: Automatic
     scheme:
       testTargets: []

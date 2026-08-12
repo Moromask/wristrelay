@@ -1,4 +1,4 @@
-package com.watchbridge.ble
+package com.wristrelay.app.ble
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
@@ -17,8 +17,8 @@ import android.bluetooth.le.BluetoothLeAdvertiser
 import android.content.Context
 import android.os.ParcelUuid
 import android.util.Log
-import com.watchbridge.ble.protocol.Fragmentation
-import com.watchbridge.ble.protocol.MessageAssembler
+import com.wristrelay.app.ble.protocol.Fragmentation
+import com.wristrelay.app.ble.protocol.MessageAssembler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

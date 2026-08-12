@@ -1,4 +1,4 @@
-package com.watchbridge.storage
+package com.wristrelay.app.storage
 
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
@@ -90,9 +90,9 @@ class SecureStorage(context: Context) {
 
     companion object {
         private const val TAG = "SecureStorage"
-        private const val PREFS_NAME = "watchbridge_secure"
+        private const val PREFS_NAME = "wristrelay_secure"
         private const val ANDROID_KEYSTORE = "AndroidKeyStore"
-        private const val KEY_ALIAS = "watchbridge_master_key"
+        private const val KEY_ALIAS = "wristrelay_master_key"
         private const val KEY_ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
         private const val BLOCK_MODE = KeyProperties.BLOCK_MODE_GCM
         private const val PADDING = KeyProperties.ENCRYPTION_PADDING_NONE

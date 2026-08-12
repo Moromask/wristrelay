@@ -1,4 +1,4 @@
-package com.watchbridge.ble
+package com.wristrelay.app.ble
 
 import java.util.UUID
 

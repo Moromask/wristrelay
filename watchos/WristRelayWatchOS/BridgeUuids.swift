@@ -2,7 +2,7 @@ import Foundation
 import CoreBluetooth
 
 /// Fixed UUIDs shared with the Android app.
-/// Must match com.watchbridge.ble.BridgeUuids and docs/PROTOCOL.md.
+/// Must match com.wristrelay.ble.BridgeUuids and docs/PROTOCOL.md.
 enum BridgeUuids {
     private static let base = "-C4D1-4A7E-9B3A-9A8E1F2A3B4C"
 

@@ -1,4 +1,4 @@
-# WatchBridge — Apple Watch ↔ Android
+# WristRelay — Apple Watch ↔ Android
 
 Мост уведомлений и данных здоровья между Android-телефоном и Apple Watch по Bluetooth LE.
 
@@ -13,14 +13,14 @@ Android (GATT server)  <====BLE====>  Apple Watch (GATT client)
 ## Структура проекта
 
 ```
-watchbridge/
+wristrelay/
 ├── docs/
 │   ├── PLAN.md        — полный план разработки
 │   └── PROTOCOL.md    — спецификация BLE-протокола (единый источник истины)
 ├── proto/
 │   └── bridge.proto   — protobuf-схема сообщений (для обеих платформ)
 ├── android/           — Android-приложение (Kotlin, Compose)
-│   └── app/src/main/java/com/watchbridge/
+│   └── app/src/main/java/com/wristrelay/
 │       ├── ble/             — GATT-сервер, реклама, фрагментация, протокол
 │       ├── notifications/   — NotificationListenerService, извлечение контента
 │       ├── health/          — Health Connect чтение/запись
@@ -49,9 +49,9 @@ set GRADLE_USER_HOME=C:\Temp\gradle-home
 
 1. Установите APK на телефон (Android 8.0+, API 26+).
 2. Дайте разрешения: Nearby Devices (Bluetooth), уведомления.
-3. Включите доступ к уведомлениям для WatchBridge в системных настройках.
+3. Включите доступ к уведомлениям для WristRelay в системных настройках.
 4. Откройте приложение → «Запустить синхронизацию».
-5. На часах запустите WatchBridge и найдите телефон.
+5. На часах запустите WristRelay и найдите телефон.
 
 ### Health Connect
 
@@ -107,15 +107,15 @@ SwiftProtobuf через SPM.
 
 Проект уже содержит `.github/workflows/watchos-build.yml`. Чтобы запустить:
 
-1. Создайте репозиторий на GitHub (например `watchbridge`).
+1. Создайте репозиторий на GitHub (например `wristrelay`).
 2. Запушьте проект:
    ```bash
-   git remote add origin https://github.com/ВАШ_ЛОГИН/watchbridge.git
+   git remote add origin https://github.com/ВАШ_ЛОГИН/wristrelay.git
    git push -u origin master
    ```
 3. Откройте репозиторий → вкладка **Actions** → workflow **watchos-build** →
    **Run workflow**.
-4. Через ~3–5 минут в артефактах появится `WatchBridgeWatchOS-simulator.app`.
+4. Через ~3–5 минут в артефактах появится `WristRelayWatchOS-simulator.app`.
 
 Если Swift-код не компилируется — workflow упадёт с ошибками, и мы их исправим
 (до покупки Apple Developer и до Mac).
