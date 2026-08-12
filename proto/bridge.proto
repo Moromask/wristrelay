@@ -1,0 +1,129 @@
+syntax = "proto3";
+
+package watchbridge;
+
+option java_package = "com.watchbridge.proto";
+option java_outer_classname = "Bridge";
+option swift_prefix = "WB";
+
+// --- Envelope ---
+
+enum MessageType {
+  MESSAGE_UNKNOWN = 0;
+  NOTIFICATION = 1;
+  NOTIFICATION_REMOVED = 2;
+  NOTIFICATION_ACTION = 3;
+  HEALTH_SAMPLE = 4;
+  PAIRING = 5;
+  COMMAND = 6;
+  PING = 7;
+  PONG = 8;
+}
+
+message Envelope {
+  uint64 sequence = 1;
+  MessageType type = 2;
+  bytes payload = 3;
+}
+
+// --- Notifications ---
+
+message Action {
+  string id = 1;
+  string title = 2;
+  bool has_reply = 3;
+  string reply_result_key = 4;
+  bool is_inline_reply = 5;
+  bool opens_app = 6;
+}
+
+message Notification {
+  string package_name = 1;
+  string key = 2;
+  string title = 3;
+  string text = 4;
+  string app_name = 5;
+  int64 posted_at_ms = 6;
+  int64 when_ms = 7;
+  string category = 8;
+  bool ongoing = 9;
+  repeated Action actions = 10;
+  string large_icon_id = 11;
+}
+
+message NotificationRemoved {
+  string key = 1;
+  int32 reason = 2;
+}
+
+message NotificationAction {
+  string notification_key = 1;
+  string action_id = 2;
+  string reply_text = 3;
+}
+
+// --- Health ---
+
+enum HealthMetric {
+  HEALTH_UNKNOWN = 0;
+  STEPS = 1;
+  HEART_RATE = 2;
+  HEART_RATE_RESTING = 3;
+  BLOOD_OXYGEN = 4;
+  SLEEP = 5;
+  ACTIVE_CALORIES = 6;
+  DISTANCE_METERS = 7;
+  WORKOUT = 8;
+}
+
+message HealthSample {
+  HealthMetric metric = 1;
+  double value = 2;
+  int64 time_ms = 3;
+  string source = 4;
+  int64 duration_ms = 5;
+  double min = 6;
+  double max = 7;
+}
+
+// --- Commands ---
+
+message OpenApp { string target_screen = 1; }
+message ShowMessage { string text = 1; }
+message VibrationPattern { repeated int32 pattern_ms = 1; }
+message RequestState {}
+message StateSnapshot {
+  int32 battery_percent = 1;
+  bool charging = 2;
+}
+
+message Command {
+  oneof command {
+    OpenApp open_app = 1;
+    ShowMessage show_message = 2;
+    VibrationPattern vibration = 3;
+    RequestState request_state = 4;
+    StateSnapshot state_snapshot = 5;
+  }
+}
+
+// --- Pairing ---
+
+enum PairingStep {
+  PAIRING_UNKNOWN = 0;
+  WATCH_HELLO = 1;
+  PHONE_PIN = 2;
+  WATCH_PIN = 3;
+  PHONE_VERIFIED = 4;
+  WATCH_VERIFIED = 5;
+  RESET = 6;
+}
+
+message PairingMessage {
+  PairingStep step = 1;
+  bytes nonce = 2;
+  bytes pin_hash = 3;
+  bytes session_key = 4;
+  bool success = 5;
+  string error = 6;
+}

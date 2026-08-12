@@ -1,0 +1,22 @@
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.kotlin/
+
+# macOS / Xcode
+.DS_Store
+**/xcuserdata/
+DerivedData/
+*.xcworkspace/xcuserdata/
+
+# Gradle user home (Windows)
+C:/Temp/gradle-home/
+
+# IntelliJ/Android Studio
+.idea/
+*.iml
+
+# Опечатки и прочее
+*.log

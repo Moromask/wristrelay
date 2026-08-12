@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WatchBridge</string>
+    <string name="notification_listener_label">WatchBridge уведомления</string>
+    <string name="service_active">Синхронизация активна</string>
+    <string name="service_channel_name">WatchBridge служба</string>
+</resources>
