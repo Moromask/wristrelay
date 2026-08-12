@@ -20,12 +20,16 @@ final class CentralManager: NSObject, ObservableObject, CBCentralManagerDelegate
     private var characteristicWrites: [CBUUID: CBCharacteristic] = [:]
     private let onMessage: (Data) -> Void
     private let onReady: (() -> Void)?
+    private let onDisconnect: (() -> Void)?
     private var discoveredServices = false
     private var discoveredCharacteristics = 0
 
-    init(onMessage: @escaping (Data) -> Void, onReady: (() -> Void)? = nil) {
+    init(onMessage: @escaping (Data) -> Void,
+         onReady: (() -> Void)? = nil,
+         onDisconnect: (() -> Void)? = nil) {
         self.onMessage = onMessage
         self.onReady = onReady
+        self.onDisconnect = onDisconnect
         super.init()
         manager = CBCentralManager(delegate: self, queue: nil)
     }
@@ -86,7 +90,9 @@ final class CentralManager: NSObject, ObservableObject, CBCentralManagerDelegate
         connectedPeripheral = nil
         characteristicWrites = [:]
         discoveredServices = false
+        discoveredCharacteristics = 0
         state = .idle
+        onDisconnect?()
     }
 
     // MARK: - PeripheralDelegate

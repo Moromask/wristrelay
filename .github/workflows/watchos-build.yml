@@ -22,8 +22,16 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
 
+      - name: Install protoc + SwiftProtobuf plugin
+        run: |
+          brew install protobuf
+          brew install swift-protobuf
+
       - name: Show Xcode version
         run: xcodebuild -version
+
+      - name: Generate Swift protobuf classes
+        run: bash Scripts/generate_proto.sh
 
       - name: Generate Xcode project
         run: xcodegen generate

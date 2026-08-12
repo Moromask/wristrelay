@@ -11,6 +11,9 @@ android/.kotlin/
 DerivedData/
 *.xcworkspace/xcuserdata/
 
+# Сгенерированные Swift protobuf классы (генерятся в CI скриптом generate_proto.sh)
+watchos/WristRelayWatchOS/Generated/
+
 # Gradle user home (Windows)
 C:/Temp/gradle-home/
 

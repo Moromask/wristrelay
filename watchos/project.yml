@@ -8,12 +8,19 @@ options:
   createIntermediateGroups: true
   groupSortPosition: top
 
+packages:
+  SwiftProtobuf:
+    url: https://github.com/apple/swift-protobuf.git
+    from: 1.26.0
+
 targets:
   WristRelayWatchOS:
     type: application
     platform: watchOS
     sources:
       - WristRelayWatchOS
+    dependencies:
+      - package: SwiftProtobuf
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.wristrelay.watch
