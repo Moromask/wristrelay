@@ -176,7 +176,7 @@ enum QrCodeGenerator {
     private static func reedSolomon(_ data: [Int], degree: Int) -> [Int] {
         var gen = [1]
         for i in 0..<degree {
-            let next = [Int](repeating: 0, count: gen.count + 1)
+            var next = [Int](repeating: 0, count: gen.count + 1)
             for (j, g) in gen.enumerated() {
                 next[j] ^= gfMul(g, expTable[i])
                 next[j + 1] ^= g
