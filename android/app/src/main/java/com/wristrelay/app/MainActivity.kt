@@ -52,10 +52,17 @@ private fun BridgeHome() {
         }.toTypedArray()
     }
 
+    // Флаг: запустить службу сразу после выдачи разрешений
+    var pendingStart by remember { mutableStateOf(false) }
+
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) {
-        // после ответа можно обновить UI
+        if (pendingStart && !running) {
+            BridgeService.start(context)
+            running = true
+        }
+        pendingStart = false
     }
 
     // Запуск сканера QR и обработка результата (nonce с экрана часов)
@@ -98,13 +105,12 @@ private fun BridgeHome() {
 
         Button(
             onClick = {
-                launcher.launch(permissions)
-                if (!running) {
-                    BridgeService.start(context)
-                    running = true
-                } else {
+                if (running) {
                     BridgeService.stop(context)
                     running = false
+                } else {
+                    pendingStart = true
+                    launcher.launch(permissions)
                 }
             },
             modifier = Modifier.fillMaxWidth()
@@ -115,8 +121,8 @@ private fun BridgeHome() {
         OutlinedButton(
             onClick = {
                 if (!running) {
-                    BridgeService.start(context)
-                    running = true
+                    pendingStart = true
+                    launcher.launch(permissions)
                 }
                 qrLauncher.launch(Intent(context, QrScannerActivity::class.java))
             },
