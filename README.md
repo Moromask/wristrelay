@@ -75,10 +75,25 @@ SwiftProtobuf через SPM.
 
 - [x] Протокол и proto
 - [x] Android: каркас, BLE-сервер, уведомления, health, pairing, storage
-- [x] watchOS: каркас SwiftUI + BLE-клиент + протокол
-- [ ] Интеграция protobuf-кодогенерации на watchOS (SwiftProtobuf)
-- [ ] Полный reply-флоу и HealthKit на часах
-- [ ] Тесты на реальных устройствах
+- [x] Android: QR-пэйринг (сканирование камерой), запуск службы после разрешений
+- [x] watchOS: каркас SwiftUI + BLE-клиент, QR-показ (свой генератор без CoreImage)
+- [x] watchOS: SwiftProtobuf-кодогенерация в CI, HealthKit, reply-флоу, авто-переподключение
+- [x] Тесты: Fragmentation, EnvelopeCodec, PairingManager (17 тестов)
+- [ ] Сквозной тест на реальных часах + телефоне (BLE + QR)
+- [ ] Подписанная сборка .ipa (TestFlight) для установки на часы
+
+## Тесты
+
+```bash
+cd android
+./gradlew :app:testDebugUnitTest   # 17 unit-тестов протокола и пэйринга
+```
+
+## Сборка watchOS (только на Mac)
+
+См. `watchos/README_WATCHOS.md`. Требуется Xcode 15+, watchOS 9+.
+Swift-protobuf классы генерируются автоматически в CI (`Scripts/generate_proto.sh`),
+локально: `brew install protobuf swift-protobuf` + запустить скрипт.
 
 ## Ограничения этой машины
 
