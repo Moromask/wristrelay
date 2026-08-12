@@ -1,9 +1,11 @@
 package com.wristrelay.app
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -15,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.wristrelay.app.qr.QrScannerActivity
 import com.wristrelay.app.service.BridgeService
 
 class MainActivity : ComponentActivity() {
@@ -55,6 +58,21 @@ private fun BridgeHome() {
         // после ответа можно обновить UI
     }
 
+    // Запуск сканера QR и обработка результата (nonce с экрана часов)
+    val qrLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        val nonce = QrScannerActivity.consumeResult()
+        if (nonce != null) {
+            val delivered = BridgeService.submitQrNonce(nonce)
+            Toast.makeText(
+                context,
+                if (delivered) "QR принят: ожидаем подключения часов…" else "Запустите службу перед сканированием",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -92,6 +110,19 @@ private fun BridgeHome() {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(if (running) "Остановить синхронизацию" else "Запустить синхронизацию")
+        }
+
+        OutlinedButton(
+            onClick = {
+                if (!running) {
+                    BridgeService.start(context)
+                    running = true
+                }
+                qrLauncher.launch(Intent(context, QrScannerActivity::class.java))
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Сканировать QR-код часов")
         }
     }
 }

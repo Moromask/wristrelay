@@ -23,6 +23,10 @@
     <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED" />
     <uses-permission android:name="android.permission.health.WRITE_HEART_RATE" />
 
+    <!-- QR-пэйринг -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
 
     <queries>
@@ -46,6 +50,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".qr.QrScannerActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".service.BridgeService"

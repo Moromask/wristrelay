@@ -74,5 +74,14 @@ dependencies {
 
     implementation("androidx.health.connect:connect-client:1.1.0-alpha07")
 
+    // CameraX для сканера QR
+    val camerax = "1.4.1"
+    implementation("androidx.camera:camera-core:$camerax")
+    implementation("androidx.camera:camera-camera2:$camerax")
+    implementation("androidx.camera:camera-lifecycle:$camerax")
+    implementation("androidx.camera:camera-view:$camerax")
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
+    implementation("com.google.guava:guava:31.1-android")
+
     testImplementation("junit:junit:4.13.2")
 }

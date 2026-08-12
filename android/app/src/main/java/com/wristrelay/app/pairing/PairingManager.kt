@@ -8,15 +8,17 @@ import java.security.MessageDigest
 import java.security.SecureRandom
 
 /**
- * PIN-based pairing over the encrypted BLE channel.
+ * Пэйринг по защищённому BLE-каналу.
  *
- * Flow (see docs/PROTOCOL.md):
- *  1. Watch -> Phone  WATCH_HELLO(nonce=32B)
- *  2. Phone shows a 6-digit PIN in the UI
- *  3. Phone -> Watch  PHONE_PIN (notifies that PIN is generated)
- *  4. Watch -> Phone  WATCH_PIN(pin_hash = SHA-256(pin + nonce))
- *  5. Phone verifies, stores session key, replies PHONE_VERIFIED(success=true, session_key)
- *  6. Watch replies WATCH_VERIFIED -> fully paired
+ * Два потока (см. docs/PROTOCOL.md):
+ *  A. QR: Phone получает nonce из QR (с экрана часов), сверяет его в WATCH_HELLO.
+ *  B. PIN: Phone генерирует 6-значный PIN, watch присылает pin_hash.
+ *
+ * Поток A (QR):
+ *  1. Phone: acceptQrNonce(nonce) — из QR-скана.
+ *  2. Watch -> Phone WATCH_HELLO(nonce)
+ *  3. Phone сверяет с nonce из QR -> совпало -> PHONE_VERIFIED(success, session_key)
+ *  4. Watch -> WATCH_VERIFIED
  */
 class PairingManager(private val storage: SecureStorage) {
 
@@ -29,6 +31,8 @@ class PairingManager(private val storage: SecureStorage) {
     private var callback: Callback? = null
     private var currentNonce: ByteArray? = null
     private var currentPin: String? = null
+    private var qrNonce: ByteArray? = null
+    private var qrNonceTimestamp: Long = 0
     private var failureCount = 0
 
     fun setCallback(cb: Callback) {
@@ -41,68 +45,31 @@ class PairingManager(private val storage: SecureStorage) {
     fun reset() {
         currentNonce = null
         currentPin = null
+        qrNonce = null
         failureCount = 0
     }
 
-    fun startPairing(): PairingMessage {
-        // We (phone) generate the nonce or watch sends it. In our flow the watch
-        // sends WATCH_HELLO first. This is called when the phone initiates.
-        val pin = generatePin()
-        currentPin = pin
-        callback?.onPinRequired(pin)
-        return PairingMessage.newBuilder()
-            .setStep(PairingStep.PHONE_PIN)
-            .build()
+    /**
+     * Телефон получил nonce из QR-кода (сканирование экрана часов).
+     * Ожидается, что watch пришлёт его в WATCH_HELLO в течение QR_TTL_MS.
+     */
+    fun acceptQrNonce(nonce: ByteArray) {
+        if (nonce.size != 32) {
+            Log.w(TAG, "QR nonce bad size: ${nonce.size}")
+            return
+        }
+        qrNonce = nonce
+        qrNonceTimestamp = System.currentTimeMillis()
+        Log.d(TAG, "QR nonce принят")
     }
 
     /** Обработка сообщения от часов. */
     fun handleWatchMessage(msg: PairingMessage): PairingMessage? {
         return when (msg.step) {
-            PairingStep.WATCH_HELLO -> {
-                val nonce = msg.nonce.toByteArray()
-                if (nonce.size != 32) {
-                    callback?.onPairingFailed("bad nonce size")
-                    return null
-                }
-                currentNonce = nonce
-                val pin = generatePin()
-                currentPin = pin
-                callback?.onPinRequired(pin)
-                // reply: notify the watch a PIN is ready
-                PairingMessage.newBuilder().setStep(PairingStep.PHONE_PIN).build()
-            }
-            PairingStep.WATCH_PIN -> {
-                val nonce = currentNonce
-                val pin = currentPin
-                if (nonce == null || pin == null) {
-                    callback?.onPairingFailed("pairing not started")
-                    return null
-                }
-                val expected = sha256((pin + byteArrayToString(nonce)).toByteArray(Charsets.UTF_8))
-                if (msg.pinHash.toByteArray().contentEquals(expected)) {
-                    failureCount = 0
-                    val sessionKey = ByteArray(32).also { SecureRandom().nextBytes(it) }
-                    storage.put(KEY_SESSION, android.util.Base64.encodeToString(sessionKey, android.util.Base64.NO_WRAP))
-                    callback?.onPaired(sessionKey)
-                    PairingMessage.newBuilder()
-                        .setStep(PairingStep.PHONE_VERIFIED)
-                        .setSuccess(true)
-                        .setSessionKey(com.google.protobuf.ByteString.copyFrom(sessionKey))
-                        .build()
-                } else {
-                    failureCount++
-                    if (failureCount >= 3) {
-                        reset()
-                        callback?.onPairingFailed("too many attempts")
-                        null
-                    } else {
-                        callback?.onPairingFailed("wrong pin")
-                        null
-                    }
-                }
-            }
+            PairingStep.WATCH_HELLO -> handleHello(msg)
+            PairingStep.WATCH_PIN -> handlePin(msg)
             PairingStep.WATCH_VERIFIED -> {
-                // watch confirmed end-to-end success
+                // watch подтвердил успех end-to-end
                 PairingMessage.newBuilder().setStep(PairingStep.RESET).build()
             }
             PairingStep.RESET -> {
@@ -112,6 +79,65 @@ class PairingManager(private val storage: SecureStorage) {
             }
             else -> null
         }
+    }
+
+    private fun handleHello(msg: PairingMessage): PairingMessage? {
+        val nonce = msg.nonce.toByteArray()
+        if (nonce.size != 32) {
+            callback?.onPairingFailed("bad nonce size")
+            return null
+        }
+        currentNonce = nonce
+
+        // QR-путь: сверяем nonce с тем, что пришло из QR
+        val qr = qrNonce
+        val qrFresh = qr != null &&
+            (System.currentTimeMillis() - qrNonceTimestamp) <= QR_TTL_MS
+        if (qrFresh && qr != null && qr.contentEquals(nonce)) {
+            qrNonce = null
+            return completePairing()
+        }
+
+        // иначе — PIN-путь
+        val pin = generatePin()
+        currentPin = pin
+        callback?.onPinRequired(pin)
+        return PairingMessage.newBuilder().setStep(PairingStep.PHONE_PIN).build()
+    }
+
+    private fun handlePin(msg: PairingMessage): PairingMessage? {
+        val nonce = currentNonce
+        val pin = currentPin
+        if (nonce == null || pin == null) {
+            callback?.onPairingFailed("pairing not started")
+            return null
+        }
+        val expected = sha256((pin + byteArrayToString(nonce)).toByteArray(Charsets.UTF_8))
+        return if (msg.pinHash.toByteArray().contentEquals(expected)) {
+            failureCount = 0
+            completePairing()
+        } else {
+            failureCount++
+            if (failureCount >= 3) {
+                reset()
+                callback?.onPairingFailed("too many attempts")
+                null
+            } else {
+                callback?.onPairingFailed("wrong pin")
+                null
+            }
+        }
+    }
+
+    private fun completePairing(): PairingMessage {
+        val sessionKey = ByteArray(32).also { SecureRandom().nextBytes(it) }
+        storage.put(KEY_SESSION, android.util.Base64.encodeToString(sessionKey, android.util.Base64.NO_WRAP))
+        callback?.onPaired(sessionKey)
+        return PairingMessage.newBuilder()
+            .setStep(PairingStep.PHONE_VERIFIED)
+            .setSuccess(true)
+            .setSessionKey(com.google.protobuf.ByteString.copyFrom(sessionKey))
+            .build()
     }
 
     private fun generatePin(): String {
@@ -131,5 +157,6 @@ class PairingManager(private val storage: SecureStorage) {
     companion object {
         private const val TAG = "PairingManager"
         private const val KEY_SESSION = "pairing_session_key"
+        private const val QR_TTL_MS = 2 * 60 * 1000L
     }
 }

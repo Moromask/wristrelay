@@ -1,4 +1,6 @@
 import SwiftUI
+import CoreImage.CIFilterBuiltins
+import CoreImage
 
 struct RootView: View {
     @EnvironmentObject var session: WatchSession
@@ -86,9 +88,11 @@ struct NotificationListView: View {
 struct PairingView: View {
     @EnvironmentObject var session: WatchSession
     @State private var pin = ""
+    @State private var qrImage: Image?
+    @State private var qrPayload = ""
 
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 8) {
             if session.paired {
                 Label("Часы спарены", systemImage: "checkmark.seal.fill")
                     .foregroundColor(.green)
@@ -96,16 +100,41 @@ struct PairingView: View {
             } else {
                 Text("Пэйринг с телефоном")
                     .font(.headline)
-                TextField("PIN с телефона", text: $pin)
-                    .textContentType(.oneTimeCode)
-                    .font(.title)
-                    .multilineTextAlignment(.center)
-                Button("Подтвердить") {
-                    session.sendPairing(pin: pin)
+
+                if let qrImage {
+                    qrImage
+                        .interpolation(.none)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 90, height: 90)
+                        .padding(4)
+                        .background(Color.white)
+                        .cornerRadius(6)
+                } else {
+                    Button("Показать QR-код") {
+                        qrPayload = session.generateQrPayload()
+                        qrImage = makeQrImage(qrPayload)
+                    }
+                    .font(.caption)
                 }
-                .disabled(pin.count != 6)
+
+                Text("Отсканируйте QR в приложении WristRelay на телефоне")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
             }
         }
         .padding()
+    }
+
+    private func makeQrImage(_ payload: String) -> Image? {
+        let filter = CIFilter.qrCodeGenerator()
+        filter.message = Data(payload.utf8)
+        filter.correctionLevel = "M"
+        guard let output = filter.outputImage else { return nil }
+        let scaled = output.transformed(by: CGAffineTransform(scaleX: 8, y: 8))
+        let context = CIContext()
+        guard let cgImage = context.createCGImage(scaled, from: scaled.extent) else { return nil }
+        return Image(decorative: cgImage, scale: 1.0)
     }
 }

@@ -47,6 +47,7 @@ class BridgeService : Service(), GattServer.Listener, MessageAssembler.Listener,
 
     override fun onCreate() {
         super.onCreate()
+        instance = this
         createChannels()
         gattServer = GattServer(this, this)
         gattServer.setMessageListener(this)
@@ -73,6 +74,7 @@ class BridgeService : Service(), GattServer.Listener, MessageAssembler.Listener,
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onDestroy() {
+        instance = null
         Outgoing.clearForwarder()
         gattServer.stop()
         super.onDestroy()
@@ -231,6 +233,15 @@ class BridgeService : Service(), GattServer.Listener, MessageAssembler.Listener,
         private const val CHANNEL_ID = "wristrelay_service"
         private const val NOTIFICATION_ID = 9417
         const val ACTION_STOP = "com.wristrelay.app.action.STOP"
+
+        private var instance: BridgeService? = null
+
+        /** Передать nonce, полученный из QR-скана, активному сервису. */
+        fun submitQrNonce(nonce: ByteArray): Boolean {
+            val svc = instance ?: return false
+            svc.pairingManager.acceptQrNonce(nonce)
+            return true
+        }
 
         fun start(context: Context) {
             val intent = Intent(context, BridgeService::class.java)

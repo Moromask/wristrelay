@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import Security
 
 /// High-level session: connects the watch to the phone, sends/receives messages,
 /// handles pairing state.
@@ -18,10 +19,12 @@ final class WatchSession: ObservableObject {
     @Published private(set) var paired = false
     @Published private(set) var notifications: [WBNotification] = []
     @Published private(set) var pinRequired = false
+    @Published private(set) var pairingNonce: String?   // hex nonce для QR
 
     private var central: CentralManager?
     private var pendingFragments: [UInt64: [Data]] = [:]
     private var sequence: UInt64 = 1
+    private var nonceBytes: Data?
     private var sessionKey: Data? {
         didSet { paired = sessionKey != nil }
     }
@@ -43,6 +46,18 @@ final class WatchSession: ObservableObject {
         central?.disconnect()
         central = nil
         connectionState = .idle
+    }
+
+    /// Генерирует 32-байтовый nonce и payload для QR-кода.
+    /// Формат: "WRISTRELAY:1:<hex nonce>" (см. docs/PROTOCOL.md).
+    func generateQrPayload() -> String {
+        var bytes = [UInt8](repeating: 0, count: 32)
+        _ = SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes)
+        let data = Data(bytes)
+        nonceBytes = data
+        let hex = data.map { String(format: "%02x", $0) }.joined()
+        pairingNonce = hex
+        return "WRISTRELAY:1:" + hex
     }
 
     // MARK: - Receive
@@ -100,8 +115,20 @@ final class WatchSession: ObservableObject {
     }
 
     func sendPairing(pin: String) {
-        // Placeholder until SwiftProtobuf codegen is wired up.
-        pinRequired = false
+        // QR-поток: nonce сгенерирован и показан в QR. При подключении по BLE
+        // телефон сверяет nonce из QR с nonce в WATCH_HELLO.
+        sendHello()
+    }
+
+    /// Watch -> Phone: WATCH_HELLO c nonce из QR.
+    private func sendHello() {
+        // TODO: сгенерировать protobuf Envelope(PairingMessage{step: WATCH_HELLO, nonce}).
+        // Пока only log; интеграция protobuf — следующий шаг.
+        NSLog("WATCH_HELLO nonce=\(nonceHex(nonceBytes ?? Data()))")
+    }
+
+    private func nonceHex(_ data: Data) -> String {
+        data.map { String(format: "%02x", $0) }.joined()
     }
 
     // MARK: - Parsing (minimal, no codegen)
